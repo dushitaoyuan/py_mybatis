@@ -1,0 +1,2 @@
+class PyMybatisEx(Exception):
+    pass

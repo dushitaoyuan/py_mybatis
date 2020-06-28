@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Test">
+    <sql id="sometable">
+        fruits
+    </sql>
+    <sql id="somewhere">
+        WHERE
+        category = #{category}
+    </sql>
+    <sql id="someinclude">
+        FROM
+        <include refid="${include_target}"/>
+        <include refid="somewhere"/>
+    </sql>
+    <select id="testBasic">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        WHERE
+        category = 'apple' AND
+        <![CDATA[ price < 500 ]]>
+    </select>
+
+    <select id="test_function">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        WHERE
+        category =$f{like(params['name'])}
+        and time =$f{time_format(params['time'])}
+    </select>
+    <select id="testParameters">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        WHERE
+        category = #{category,sql_type=VARCHAR}
+        AND price > ${price,sql_type=BIGINT}
+        AND type = ${type,sql_type=BOOLEAN}
+        AND content = ${content,sql_type=BLOB}
+    </select>
+    <select id="testInclude">
+        SELECT
+        name,
+        category,
+        price
+        <include refid="someinclude">
+            <property name="prefix" value="Some"/>
+            <property name="include_target" value="sometable"/>
+        </include>
+    </select>
+    <select id="testIf">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        WHERE
+        1=1
+        <if test="'category' in params">
+            AND category = #{category}
+        </if>
+        <if test="'price' in params">
+            AND price = ${price}
+            <if test="params['price'] >= 400">
+                AND name = 'Fuji'
+            </if>
+        </if>
+    </select>
+
+    <select id="testTrim">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            OR category = 'apple'
+            OR price = 200
+        </trim>
+        <trim prefix="AND" prefixOverrides="AND|OR">
+            (type = 40 OR type= 60) and yn = 1
+        </trim>
+    </select>
+    <select id="testWhere">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        <where>
+            AND category = 'apple'
+            <if test="'price' in params ">
+                AND price = ${price}
+            </if>
+        </where>
+    </select>
+    <update id="testSet">
+        UPDATE
+        fruits
+        <set>
+            <if test="'category' in params">
+                category = #{category},
+            </if>
+            <if test="'price' in params">
+                price = ${price}
+            </if>
+        </set>
+        WHERE
+        name = #{name}
+    </update>
+    <select id="testChoose">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        <where>
+            <choose>
+                <when test="'name' in params">
+                    AND name = #{name}
+                </when>
+                <when test="'category' in params and  params['category'] == 'banana'">
+                    AND category = #{category}
+                    <if test="'price' in params and  len(params['price'] )>0  ">
+                        AND price = ${price}
+                    </if>
+                </when>
+                <otherwise>
+                    AND category = 'apple'
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+    <select id="testForeach">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        <where>
+            category = 'apple' AND name in
+            <foreach collection="names" item="name" open="(" close=")" separator=",">
+                #{name}
+            </foreach>
+        </where>
+    </select>
+    <insert id="testInsertMulti">
+        INSERT INTO
+        fruits
+        (
+        name,
+        category,
+        price
+        )
+        VALUES
+        <foreach collection="fruits" item="fruit"  separator=",">
+            (
+            #{fruit['name']},
+            #{fruit['category']},
+            ${fruit['price']}
+            )
+        </foreach>
+    </insert>
+    <select id="testBind">
+        <bind name="likeName" value="'%{}%'.format(params['name'])"/>
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        WHERE
+        name like #{likeName}
+    </select>
+    <insert id="testInsertSelective">
+        insert into fruits
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="'name' in params">
+                name,
+            </if>
+            <if test="'category' in params">
+                category,
+            </if>
+            <if test="'price' in params">
+                price,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="'name' in params">
+                #{name},
+            </if>
+            <if test="'category' in params">
+                #{category},
+            </if>
+            <if test="'category' in params">
+                #{price},
+            </if>
+        </trim>
+    </insert>
+    <select id="testChooseNative">
+        SELECT
+        name,
+        category,
+        price
+        FROM
+        fruits
+        <where>
+            <choose>
+                <when test="'name' in params">
+                    AND name = #{name}
+                </when>
+                <when test="'category' in params and params['category'] == 'banana'">
+                    AND category = #{category}
+                    <if test="'price' in params">
+                        AND price = ${price}
+                    </if>
+                </when>
+                <otherwise>
+                    AND category = 'apple'
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+</mapper>
