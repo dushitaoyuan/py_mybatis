@@ -16,3 +16,5 @@ from .py_mybatis_ex import PyMybatisEx
 from .mapper_func import PyFunction, PY_PARAM_FUNCTION, PY_RESULT_FUNCTION
 
 from .sql_params import get_params, get_sql_param
+
+from .sql.sql_template import SqlTemplate, Page

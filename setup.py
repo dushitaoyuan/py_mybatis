@@ -24,12 +24,12 @@ class Test(test):
 
 
 setup(
-    name='mybatis-mapper2sql',
-    version='0.1.9',
-    author='hhyo',
-    author_email='rtttte@qq.com',
+    name='py_mybatis',
+    version='0.1.0',
+    author='dushitaoyuan',
+    author_email='dushitaoyuan@gmail.com',
     url='http://github.com/hhyo/mybatis-mapper2sql',
-    description='Generate SQL Statements from the MyBatis3 Mapper XML file',
+    description='python mybatis',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
     keywords='mybatis mapper2sql mybatis-mapper2sql',

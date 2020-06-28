@@ -4,16 +4,18 @@ functions
 """
 import time
 
+from .sql_util import *
+
 
 def like(value):
-    return '%' + value + '%'
+    return sql_string_format(value)
 
 
 def time_format(date_value, format: str = '%Y-%m-%d %H:%M:%S'):
-    return time.strftime(format, date_value)
+    return sql_string_format(time.strftime(format, date_value))
 
 
-fun_dict = {}
-fun_dict['like'] = like
+default_fun_dict = {}
+default_fun_dict['like'] = like
 
-fun_dict['time_format'] = time_format
+default_fun_dict['time_format'] = time_format

@@ -3,6 +3,7 @@ from .py_mybatis_ex import PyMybatisEx
 from .funs import *
 
 
+# 函数容器
 class PyFunction(object):
 
     def __init__(self):
@@ -27,8 +28,9 @@ class PyFunction(object):
 
 # 参数 转换函数
 PY_PARAM_FUNCTION = PyFunction()
+# 注册参数转换函数
+for fun_name in default_fun_dict:
+    PY_PARAM_FUNCTION.register_func(fun_name, default_fun_dict[fun_name])
 
-for fun_name in fun_dict:
-    PY_PARAM_FUNCTION.register_func(fun_name, fun_dict[fun_name])
 # 返回值转换函数
 PY_RESULT_FUNCTION = PyFunction()

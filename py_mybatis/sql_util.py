@@ -35,3 +35,9 @@ def convert_cdata(string, reverse=False):
         string = string.replace('&gt;', '>', )
         string = string.replace('&quot;', '"')
     return string
+
+
+def sql_string_format(sql_str_value: str):
+    return '\'' + sql_str_value + '\''
+
+

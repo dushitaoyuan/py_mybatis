@@ -111,7 +111,7 @@ def convert_parameters(child, text=False, tail=False, **kwargs):
             convert_value = PY_MYBATIS_TYPE_HANDLER.convert(mybatis_param.python_type, mybatis_param.sql_type,
                                                             param_value,
                                                             PyMybatisTypeHandler.PYTHON2SQL_TYPE_HANDLER_CONVERT_MODE)
-        convert_string = convert_string.replace(mybatis_param.full_name, convert_value)
+        convert_string = convert_string.replace(mybatis_param.full_name, convert_value, 1)
     # convert CDATA string
     convert_cdata(convert_string)
     return convert_string
@@ -217,14 +217,14 @@ def convert_trim_where_set(mybatis_mapper, child, **kwargs):
         convert_string += convert_children(mybatis_mapper, next_child, **kwargs)
     # Remove prefixOverrides
     if prefix_overrides:
-        convert_string = replace_first(convert_string, prefix_overrides)
+        convert_string = ' ' + replace_sql_first(convert_string, prefix_overrides, '')
     # Remove suffixOverrides
     if suffix_overrides:
-        convert_string = replace_last(convert_string, suffix_overrides)
+        convert_string = ' ' + replace_sql_last(convert_string, suffix_overrides, '')
     # Add Prefix if String is not empty
     if re.search(r'\S', convert_string):
         if prefix:
-            convert_string = prefix + ' ' + convert_string
+            convert_string = ' ' + prefix + ' ' + convert_string
         if suffix:
             convert_string = convert_string + ' ' + suffix
     # Add trim/where/set tail
@@ -289,7 +289,7 @@ def __calc_condition(condition: str, **kwargs):
 # 计算foreach 标签值
 def __calc_foreach_value(for_each_text: str, mybatis_param_list, item, item_value):
     for param in mybatis_param_list:
-        function_expression = param.sql_param.param_name.replace(item, 'item_value')
+        function_expression = param.sql_param.param_name.replace(item, 'item_value', 1)
         calc_value = eval(function_expression, locals())
         for_each_text = for_each_text.replace(param.full_name, str(calc_value), 1)
     return for_each_text

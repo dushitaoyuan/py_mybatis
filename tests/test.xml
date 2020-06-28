@@ -15,6 +15,7 @@
     </sql>
     <select id="testBasic">
         SELECT
+        id,
         name,
         category,
         price
@@ -34,10 +35,11 @@
         fruits
         WHERE
         category =$f{like(params['name'])}
-        and time =$f{time_format(params['time'])}
+        and create_time =$f{time_format(params['create_time'])}
     </select>
     <select id="testParameters">
         SELECT
+        id,
         name,
         category,
         price
@@ -47,7 +49,6 @@
         category = #{category,sql_type=VARCHAR}
         AND price > ${price,sql_type=BIGINT}
         AND type = ${type,sql_type=BOOLEAN}
-        AND content = ${content,sql_type=BLOB}
     </select>
     <select id="testInclude">
         SELECT
@@ -74,7 +75,7 @@
         <if test="'price' in params">
             AND price = ${price}
             <if test="params['price'] >= 400">
-                AND name = 'Fuji'
+                AND name = 'pear'
             </if>
         </if>
     </select>
@@ -87,12 +88,12 @@
         FROM
         fruits
 
-        <trim prefix="WHERE" prefixOverrides="AND|OR">
+        <trim prefix="WHERE" prefixOverrides="OR">
             OR category = 'apple'
             OR price = 200
         </trim>
-        <trim prefix="AND" prefixOverrides="AND|OR">
-            (type = 40 OR type= 60) and yn = 1
+        <trim prefix="AND" prefixOverrides="OR">
+            (type = 1 OR type= 0)
         </trim>
     </select>
     <select id="testWhere">
@@ -137,7 +138,7 @@
                 </when>
                 <when test="'category' in params and  params['category'] == 'banana'">
                     AND category = #{category}
-                    <if test="'price' in params and  len(params['price'] )>0  ">
+                    <if test="'price' in params">
                         AND price = ${price}
                     </if>
                 </when>
@@ -170,7 +171,7 @@
         price
         )
         VALUES
-        <foreach collection="fruits" item="fruit"  separator=",">
+        <foreach collection="fruits" item="fruit" separator=",">
             (
             #{fruit['name']},
             #{fruit['category']},

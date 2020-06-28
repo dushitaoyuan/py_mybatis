@@ -1,3 +1,6 @@
+from .sql_util import *
+
+
 class TypeHandlerConvertor(object):
     def __init__(self, python_type_name: str, sql_type_name: str, sql2python_fun, python2sql_fun):
         self.python_type_name = python_type_name
@@ -52,6 +55,8 @@ class PyMybatisTypeHandler(object):
             type_handler = self.__find_type_handler(type_from, type_to, convert_mode)
             if type_handler:
                 return type_handler.convert(convert_mode, type_value)
+        if type(type_value) == str:
+            return sql_string_format(type_value)
         return str(type_value)
 
     def __find_type_handler(self, type_from: str, type_to: str, convert_mode: int):

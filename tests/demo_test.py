@@ -10,7 +10,7 @@ class Mapper2SqlTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mapper = PyMapper(xml_path='test.xml')
-        print(cls.mapper.xml_text)
+        # print(cls.mapper.xml_text)
 
     # def test_all(self):
     #     statement = self.mapper.statement(result_type='raw', strip_comments=True)
