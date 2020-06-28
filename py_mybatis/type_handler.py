@@ -43,21 +43,21 @@ class PyMybatisTypeHandler(object):
     def __init__(self):
         self.type_handler_support_list = []
 
-    def register_type_handler(self, python_type_name: str, sql_type_name: str, sql2python_fun, python2sql_fun):
-        self.type_handler_support_list.append(
-            TypeHandlerConvertor(python_type_name, sql_type_name, sql2python_fun, python2sql_fun))
-
-    def register_type_handler(self, type_handler_convertor: TypeHandlerConvertor):
-        self.type_handler_support_list.append(type_handler_convertor)
+    def register_type_handler(self, python_type_name: str = None, sql_type_name: str = None, sql2python_fun=None,
+                              python2sql_fun=None,
+                              type_handler_convertor: TypeHandlerConvertor = None):
+        if type_handler_convertor:
+            self.type_handler_support_list.append(type_handler_convertor)
+        else:
+            self.type_handler_support_list.append(
+                TypeHandlerConvertor(python_type_name, sql_type_name, sql2python_fun, python2sql_fun))
 
     def convert(self, type_from: str, type_to: str, type_value, convert_mode: int):
         if type_value and type_from and type_to:
             type_handler = self.__find_type_handler(type_from, type_to, convert_mode)
             if type_handler:
-                return type_handler.convert(convert_mode, type_value)
-        if type(type_value) == str:
-            return sql_string_format(type_value)
-        return str(type_value)
+                type_value = type_handler.convert(convert_mode, type_value)
+        return param_str(type_value)
 
     def __find_type_handler(self, type_from: str, type_to: str, convert_mode: int):
         for type_handler in self.type_handler_support_list:

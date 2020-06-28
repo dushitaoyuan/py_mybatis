@@ -52,6 +52,7 @@ class SqlTemplate(object):
     def select_list(self, sql, *args):
         with self._get_connection() as con:
             cursor = con.cursor()
+            print(sql)
             cursor.execute(sql, *args)
             return cursor.fetchall()
 

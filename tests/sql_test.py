@@ -45,3 +45,8 @@ print(sql_template.select_list(py_mapper.statement('testWhere', params=params)))
 
 params = {'category': 'pear', 'name': 'apple', 'price': 5}
 print(sql_template.select_list(py_mapper.statement('testSet', params=params)))
+
+params = {'names': ['name1', 'name2', 'name3']}
+print(sql_template.select_list(py_mapper.statement('testForeach', params=params)))
+
+

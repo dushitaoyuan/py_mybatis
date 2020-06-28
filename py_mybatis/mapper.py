@@ -1,8 +1,7 @@
 import sqlparse
 import xml.etree.ElementTree as ET
-import re
 from .sql_params import get_params, PyMybatisParam, get_sql_param
-from .sql_util import replace_cdata, convert_cdata
+from .sql_util import replace_cdata, convert_cdata, param_str
 from .type_handler import PyMybatisTypeHandler, PY_MYBATIS_TYPE_HANDLER
 from .mapper_func import PyFunction, PY_PARAM_FUNCTION
 
@@ -31,7 +30,7 @@ class PyMapper(object):
 
     def statement(self, sql_id: str, **kwargs):
         """
-        Get SQL Statement By child_id
+        Get SQL Statement By sql_id
         Formatting of SQL Statements
         :return:
         """
@@ -291,7 +290,7 @@ def __calc_foreach_value(for_each_text: str, mybatis_param_list, item, item_valu
     for param in mybatis_param_list:
         function_expression = param.sql_param.param_name.replace(item, 'item_value', 1)
         calc_value = eval(function_expression, locals())
-        for_each_text = for_each_text.replace(param.full_name, str(calc_value), 1)
+        for_each_text = for_each_text.replace(param.full_name, param_str(calc_value), 1)
     return for_each_text
 
 
