@@ -5,6 +5,7 @@ def replace_first(string: str, prefix: str):
     temp = string.strip()
     if temp.startswith(prefix):
         return temp.replace(prefix, count=1)
+    return string
 
 
 def replace_last(string: str, suffix: str):
@@ -13,4 +14,5 @@ def replace_last(string: str, suffix: str):
     temp = string.strip()
     if temp.endswith(suffix):
         return temp[0:-len(suffix)]
+    return string
 

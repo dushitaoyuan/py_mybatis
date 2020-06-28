@@ -286,6 +286,7 @@ def __calc_condition(condition: str, **kwargs):
     return eval(condition, locals())
 
 
+# 计算foreach 标签值
 def __calc_foreach_value(for_each_text: str, mybatis_param_list, item, item_value):
     for param in mybatis_param_list:
         function_expression = param.sql_param.param_name.replace(item, 'item_value')
