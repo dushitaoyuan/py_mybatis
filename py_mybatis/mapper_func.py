@@ -1,5 +1,4 @@
-from .py_mybatis_ex import PyMybatisEx
-
+from .logger import LOG
 from .funs import *
 
 
@@ -11,8 +10,8 @@ class PyFunction(object):
 
     def register_func(self, function_name: str, func):
         if function_name in self.function_map:
-            msg = "function {} exist".format(function_name)
-            raise PyMybatisEx(msg)
+            LOG.warning("function {} exist".format(function_name))
+            return
         self.function_map[function_name] = func
 
     def get_func(self, function_name: str):

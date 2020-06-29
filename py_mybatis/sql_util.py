@@ -38,10 +38,16 @@ def convert_cdata(string, reverse=False):
 
 
 def sql_string_format(sql_str_value: str):
-    return '\'' + sql_str_value + '\''
+    if not sql_str_value.startswith('\''):
+        sql_str_value = '\'' + sql_str_value
+    if not sql_str_value.endswith('\''):
+        sql_str_value = sql_str_value + '\''
+    return sql_str_value
 
 
 def param_str(param_value):
     if type(param_value) == str:
         return sql_string_format(param_value)
     return str(param_value)
+
+

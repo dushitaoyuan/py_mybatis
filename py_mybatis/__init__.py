@@ -4,17 +4,20 @@ PyMybatis
 ----------------------
 Generate SQL Statements from the MyBatis3 Mapper XML file
 usage:
-   >>> import mybatis_mapper2sql
-   >>> mapper, xml_raw_text = mybatis_mapper2sql.create_mapper(xml='mybatis_mapper.xml')
-   >>> statement = mybatis_mapper2sql.get_statement(mapper)
-   >>> print(statement)
+   >>> import py_mybatis
+   >>> sql_template = PdbcSqlTemplate(dataSource=mysql_pool)
+   >>> py_mapper = PyMapper(xml_path='test.xml')
+   >>> params = {'name': 'apple', 'create_time': time.localtime()}
+   >>> print(sql_template.select_list(py_mapper.statement('test_function', params=params)))
+
+   or use sql_template only
+   sql_template = PdbcSqlTemplate(dataSource=mysql_pool)
+
 """
 from .mapper import PyMapper
+from .sql import PooledDB, PdbcSqlTemplate, MybatisMapperDict, MybatisMapperScanner, MybatisSqlSession, Page, RowBound
+
 from .type_handler import PY_MYBATIS_TYPE_HANDLER, PyMybatisTypeHandler
-from .py_mybatis_ex import PyMybatisEx
 
 from .mapper_func import PyFunction, PY_PARAM_FUNCTION, PY_RESULT_FUNCTION
 
-from .sql_params import get_params, get_sql_param
-
-from .sql.sql_template import SqlTemplate, Page

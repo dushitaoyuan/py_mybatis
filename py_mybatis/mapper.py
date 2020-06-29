@@ -1,9 +1,9 @@
 import sqlparse
 import xml.etree.ElementTree as ET
-from .sql_params import get_params, PyMybatisParam, get_sql_param
+from .sql_params import get_params, PyMybatisParam
 from .sql_util import replace_cdata, convert_cdata, param_str
 from .type_handler import PyMybatisTypeHandler, PY_MYBATIS_TYPE_HANDLER
-from .mapper_func import PyFunction, PY_PARAM_FUNCTION
+from .mapper_func import PY_PARAM_FUNCTION
 
 from .string_util import *
 
@@ -19,7 +19,7 @@ class PyMapper(object):
         self.xml_text = xml_text
         raw_text = replace_cdata(xml_text)
         mapper_xml_tree = ET.fromstring(raw_text)
-        self.namespace = mapper_xml_tree.attrib.get("namespace")
+        self.namespace = mapper_xml_tree.attrib.get("namespace", 'default')
         for sub_statement_node in mapper_xml_tree:
             if sub_statement_node.tag in sql_id_type_list:
                 sql_id = sub_statement_node.attrib.get('id')
@@ -288,9 +288,21 @@ def __calc_condition(condition: str, **kwargs):
 # 计算foreach 标签值
 def __calc_foreach_value(for_each_text: str, mybatis_param_list, item, item_value):
     for param in mybatis_param_list:
-        function_expression = param.sql_param.param_name.replace(item, 'item_value', 1)
-        calc_value = eval(function_expression, locals())
-        for_each_text = for_each_text.replace(param.full_name, param_str(calc_value), 1)
+        sql_param = param.sql_param
+        if not sql_param.is_function:
+            value_expression = sql_param.param_name.replace(item, 'item_value', 1)
+            calc_value = eval(value_expression, locals())
+            for_each_text = for_each_text.replace(param.full_name, param_str(calc_value), 1)
+        else:
+            function_expression = sql_param.function_expression
+            # 查找函数
+            fun = PY_PARAM_FUNCTION.get_func(sql_param.function_name)
+            # 替换表达式
+            function_expression = sql_param.function_expression.replace(sql_param.function_name, 'fun', 1)
+            function_expression = function_expression.replace(item, 'item_value', 1)
+            # 执行函数
+            calc_value = eval(function_expression, locals())
+            for_each_text = for_each_text.replace(param.full_name, param_str(calc_value), 1)
     return for_each_text
 
 

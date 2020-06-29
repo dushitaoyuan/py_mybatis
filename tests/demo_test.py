@@ -2,31 +2,16 @@ import os
 import unittest
 from py_mybatis import PyMapper
 
+import time
+
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
 
-class Mapper2SqlTest(unittest.TestCase):
+class PyMybatisTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         cls.mapper = PyMapper(xml_path='test.xml')
-        # print(cls.mapper.xml_text)
-
-    # def test_all(self):
-    #     statement = self.mapper.statement(result_type='raw', strip_comments=True)
-    #     print(statement)
-    #
-    # def test_all_result(self):
-    #     statement = self.mapper.statement(result_type='list', strip_comments=True)
-    #     print(statement)
-    #
-    # def test_all_wrong_result(self):
-    #     try:
-    #         self.mapper.statement(result_type='sql', strip_comments=True)
-    #     except RuntimeError as e:
-    #         self.assertEqual(str(e), 'Invalid value for sql_type: raw|list')
-    #     else:
-    #         self.fail('IOError not raised')
 
     def test_base(self):
         self.sql_id = 'testBasic'
@@ -119,19 +104,31 @@ class Mapper2SqlTest(unittest.TestCase):
 
     def test_insert_multi(self):
         self.sql_id = 'testInsertMulti'
+        create_time = time.localtime()
         params = {'fruits': [
-            {'name': 'apple',
-             'category': 'apple',
-             'price': 5.0
-             },
-            {'name': 'banana',
-             'category': 'banana',
-             'price': 3.0
-             },
-            {'name': 'pear',
-             'category': 'pear',
-             'price': 4.0
-             },
+
+            {
+                'id': 1,
+                'name': 'apple',
+                'category': 'apple',
+                'price': 5.0,
+                'create_time':create_time
+            },
+            {
+                'id': 2,
+
+                'name': 'banana',
+                'category': 'banana',
+                'price': 3.0,
+                'create_time': create_time
+            },
+            {
+                'id': 3,
+                'name': 'pear',
+                'category': 'pear',
+                'price': 4.0,
+                'create_time': create_time
+            },
         ]}
 
         print("============{}============".format(self.sql_id))

@@ -13,6 +13,11 @@
         <include refid="${include_target}"/>
         <include refid="somewhere"/>
     </sql>
+
+
+    <delete id="deleteById">
+        delete from fruits where id =#{id}
+    </delete>
     <select id="testBasic">
         SELECT
         id,
@@ -166,16 +171,21 @@
         INSERT INTO
         fruits
         (
+        id,
         name,
         category,
-        price
+        price,
+        create_time
         )
         VALUES
         <foreach collection="fruits" item="fruit" separator=",">
             (
+            #{fruit['id']},
             #{fruit['name']},
             #{fruit['category']},
-            ${fruit['price']}
+            #{fruit['price']},
+            $f{time_format(fruit['create_time'])}
+
             )
         </foreach>
     </insert>
