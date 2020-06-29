@@ -3,6 +3,7 @@ import os
 
 from .pdbc_sql_template import *
 from py_mybatis.py_mybatis_ex import *
+import threading
 
 
 # mapper扫描
@@ -41,7 +42,7 @@ class MybatisMapperDict(object):
 
     def statement(self, sql_id: str, namespace: str = None, **kwargs):
         if not namespace:
-            maybe_sql_id_with_namespace = sql_id.split(',')
+            maybe_sql_id_with_namespace = sql_id.split('.')
             if len(maybe_sql_id_with_namespace) == 2:
                 namespace = maybe_sql_id_with_namespace[0]
                 sql_id = maybe_sql_id_with_namespace[1]
@@ -59,47 +60,68 @@ sql_session.select_one(sql_id='test.query',params={'a':1})
 
 
 class MybatisSqlSession(object):
+    connection_local = threading.local()
+
     def __init__(self, mapper_dict: MybatisMapperDict, dataSource: PooledDB = None,
                  sql_template: PdbcSqlTemplate = None):
         self.mapper_dict = mapper_dict
+        self.dataSource = dataSource
         if sql_template:
             self.sql_template = sql_template
+            self.dataSource = sql_template.dataSource
         elif dataSource:
             self.sql_template = PdbcSqlTemplate(dataSource)
-        raise PyMybatisEx("sql_template can't init")
+        else:
+            raise PyMybatisEx("sql_template can't init")
 
-    def beign_tx(self):
-        self.connection = self.sql_template.get_connection()
+    def __con(self):
+        if hasattr(self.connection_local, 'connection'):
+            return self.connection_local.connection
+        return None
+
+    def begin_tx(self):
+        connection = self.dataSource.connection()
+        connection.begin()
+        self.connection_local.connection = connection
+        self.connection_local.auto_commit = False
 
     def select_one(self, sql_id: str, **kwargs):
-        return self.sql_template.select_one(self.mapper_dict.statement(sql_id, **kwargs))
+        return self.sql_template.select_one(sql=self.mapper_dict.statement(sql_id, **kwargs), con=self.__con())
 
     def select_list(self, sql_id: str, row_bound: RowBound = None, **kwargs):
-        return self.sql_template.select_list(self.mapper_dict.statement(sql_id, **kwargs), row_bound)
+        return self.sql_template.select_list(sql=self.mapper_dict.statement(sql_id, **kwargs), row_bound=row_bound,
+                                             con=self.__con())
 
     def insert(self, sql_id: str, **kwargs):
-        return self.sql_template.insert(self.mapper_dict.statement(sql_id, **kwargs))
+        return self.sql_template.insert(sql=self.mapper_dict.statement(sql_id, **kwargs), con=self.__con())
 
     def delete(self, sql_id: str, **kwargs):
-        return self.sql_template.delete(self.mapper_dict.statement(sql_id, **kwargs))
+        return self.sql_template.delete(sql=self.mapper_dict.statement(sql_id, **kwargs), con=self.__con())
 
     def update(self, sql_id: str, **kwargs):
-        return self.sql_template.update(self.mapper_dict.statement(sql_id, **kwargs))
+        return self.sql_template.update(sql=self.mapper_dict.statement(sql_id, **kwargs), con=self.__con())
 
-    def select_page(self, sql_id: str, row_bound: RowBound, count_sql: str = None, **kwargs):
-        return self.sql_template.select_page(sql=self.mapper_dict.statement(sql_id, **kwargs), row_bound=row_bound,
-                                             count_sql=count_sql)
+    def select_page(self, sql_id: str, row_bound: RowBound, count_sql: str = None,
+                    **kwargs):
+        return self.sql_template.select_page(sql=self.mapper_dict.statement(sql_id, **kwargs),
+                                             row_bound=row_bound,
+                                             count_sql=count_sql, con=self.__con())
 
-    def execute_in_connection(self, fun, con=None):
-        with self.sql_template.get_connection(con):
-            return fun(con)
+    def execute_in_connection(self, fun):
+        return self.sql_template.execute_in_connection(fun)
 
     def commit(self):
-        self.connection.commit()
+        connection = self.__con()
+        if connection:
+            connection.commit()
 
     def rollback(self):
-        self.connection.rollback()
+        connection = self.__con()
+        if connection:
+            connection.rollback()
 
     def close(self):
-        if self.connection:
-            self.connection.close()
+        connection = self.__con()
+        if connection:
+            connection.close()
+            self.connection_local.connection = None

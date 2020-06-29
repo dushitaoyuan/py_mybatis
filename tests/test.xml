@@ -249,4 +249,8 @@
             </choose>
         </where>
     </select>
+
+    <insert id="insertOne">
+        insert into fruits(id,name,category,price) values(#{id},#{name},#{category},#{price})
+    </insert>
 </mapper>

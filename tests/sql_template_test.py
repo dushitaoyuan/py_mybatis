@@ -27,7 +27,7 @@ class PyMybatisTest(unittest.TestCase):
             maxusage=None,
             setsession=[],
             ping=0,
-            host="192.168.3.1",
+            host="localhost",
             user="root",
             password="root",
             database="api_user",
@@ -87,6 +87,8 @@ class PyMybatisTest(unittest.TestCase):
     def test_query_in_connection(self):
         print("============{}============".format('test_query_in_connection'))
         print(self.sql_template.execute_in_connection(query_function))
+
+
 
 
 if __name__ == '__main__':

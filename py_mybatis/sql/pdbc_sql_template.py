@@ -24,20 +24,31 @@ class PdbcSqlTemplate(object):
     def __init__(self, dataSource: PooledDB):
         self.dataSource = dataSource
 
+    """
+    
+    when con is not None 
+    must be commit manually by the calling function
+    
+    """
+
     def update(self, sql: str, con=None, args=None):
+        auto_commit = not con
         with self.get_connection(con) as connection:
             cursor = connection.cursor()
             data = cursor.execute(sql, args)
-            connection.commit()
-            cursor.close()
+            if auto_commit:
+                connection.commit()
+                cursor.close()
             return data
 
     def insert_batch(self, sql: str, con=None, args=None):
+        auto_commit = not con
         with self.get_connection(con) as connection:
             cursor = connection.cursor()
             data = cursor.executemany(sql, args)
-            connection.commit()
-            cursor.close()
+            if auto_commit:
+                connection.commit()
+                cursor.close()
             return data
 
     def insert(self, sql: str, con=None, args=None):
