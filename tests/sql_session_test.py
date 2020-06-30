@@ -151,10 +151,12 @@ class PyMybatisTest(unittest.TestCase):
     def test_insert_selective(self):
         self.sql_id = 'testInsertSelective'
         self.sql_id = self.sql_namespace + self.sql_id
-        params = {'name': 'apple',
-                  'category': 'apple',
-                  'price': 5.0
-                  }
+        params = {
+            'id': 20,
+            'name': 'apple',
+            'category': 'apple',
+            'price': 5.0
+        }
         print("============{}============,sql_result:{}".format(self.sql_id,
                                                                 self.sql_session.insert(self.sql_id,
                                                                                         params=params)))

@@ -112,7 +112,7 @@ class PyMybatisTest(unittest.TestCase):
                 'name': 'apple',
                 'category': 'apple',
                 'price': 5.0,
-                'create_time':create_time
+                'create_time': create_time
             },
             {
                 'id': 2,
@@ -138,10 +138,12 @@ class PyMybatisTest(unittest.TestCase):
 
     def test_insert_selective(self):
         self.sql_id = 'testInsertSelective'
-        params = {'name': 'apple',
-                  'category': 'apple',
-                  'price': 5.0
-                  }
+        params = {
+            'id': 20,
+            'name': 'apple',
+            'category': None,
+            'price': 5.0
+        }
 
         print("============{}============".format(self.sql_id))
         self.statement = self.mapper.statement(sql_id=self.sql_id,

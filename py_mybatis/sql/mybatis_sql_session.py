@@ -4,6 +4,7 @@ import os
 from .pdbc_sql_template import *
 from py_mybatis.py_mybatis_ex import *
 import threading
+from py_mybatis.logger import LOG
 
 
 # mapper扫描
@@ -48,10 +49,13 @@ class MybatisMapperDict(object):
                 sql_id = maybe_sql_id_with_namespace[1]
             else:
                 namespace = 'default'
-        return self.mapper_dict.get(namespace).statement(sql_id, **kwargs)
+        sql = self.mapper_dict.get(namespace).statement(sql_id, **kwargs)
+        LOG.debug("namespace {} sql_id {} statement sql {} ,args {}".format(namespace, sql_id, sql, kwargs))
+        return sql
+
+    # 执行入口
 
 
-# 执行入口
 """
 all sql param must be a dict named params
 example:

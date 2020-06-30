@@ -318,7 +318,9 @@ def __eval_function(mybatis_param: PyMybatisParam, **kwargs):
 # 获取参数
 def __get_param(param_key: str, **kwargs):
     params = kwargs['params'] if 'params' in kwargs else {}
-    return params[param_key] if param_key in params else None
+    if param_key in params:
+        return params[param_key]
+    return None
 
 
 # 添加参数

@@ -46,8 +46,8 @@ def sql_string_format(sql_str_value: str):
 
 
 def param_str(param_value):
+    if not param_value:
+        return 'null'
     if type(param_value) == str:
         return sql_string_format(param_value)
     return str(param_value)
-
-

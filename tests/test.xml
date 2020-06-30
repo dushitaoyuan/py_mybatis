@@ -203,6 +203,7 @@
     <insert id="testInsertSelective">
         insert into fruits
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
             <if test="'name' in params">
                 name,
             </if>
@@ -214,6 +215,7 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
             <if test="'name' in params">
                 #{name},
             </if>

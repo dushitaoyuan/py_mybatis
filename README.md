@@ -60,6 +60,28 @@
 **测试表结构**
 
 ```sql
+DROP TABLE IF EXISTS `fruits`;
+
+CREATE TABLE `fruits` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `category` varchar(20) DEFAULT NULL,
+  `price` double DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+insert  into `fruits`(`id`,`name`,`category`,`price`,`create_time`,`type`) values 
+
+(1,'苹果','apple',5,'2020-06-27 11:54:38',0),
+
+(2,'梨','pear',4,'2020-06-28 11:54:38',1),
+
+(3,'香蕉','banana',3,'2020-06-30 11:55:19',2);
+
 
 ```
 

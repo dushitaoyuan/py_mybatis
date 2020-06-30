@@ -1,6 +1,8 @@
 import contextlib
 from DBUtils.PooledDB import PooledDB
 
+from py_mybatis.logger import LOG
+
 
 class Page(object):
     pageSize: int = None
@@ -35,6 +37,7 @@ class PdbcSqlTemplate(object):
         auto_commit = not con
         with self.get_connection(con) as connection:
             cursor = connection.cursor()
+            LOG.debug('execute sql {},args {}', sql, args)
             data = cursor.execute(sql, args)
             if auto_commit:
                 connection.commit()
@@ -45,6 +48,7 @@ class PdbcSqlTemplate(object):
         auto_commit = not con
         with self.get_connection(con) as connection:
             cursor = connection.cursor()
+            LOG.debug('execute sql {},args {}', sql, args)
             data = cursor.executemany(sql, args)
             if auto_commit:
                 connection.commit()
@@ -60,6 +64,7 @@ class PdbcSqlTemplate(object):
     def select_one(self, sql: str, con=None, args=None):
         with self.get_connection(con) as connection:
             cursor = connection.cursor()
+            LOG.debug('execute sql {},args {}', sql, args)
             cursor.execute(sql, args)
             data = cursor.fetchone()
             cursor.close()
@@ -70,6 +75,7 @@ class PdbcSqlTemplate(object):
             cursor = connection.cursor()
             if row_bound:
                 sql = limit_query(sql, row_bound)
+            LOG.debug('execute sql {},args {}'.format(sql, args))
             cursor.execute(sql, args)
             data = cursor.fetchall()
             cursor.close()
@@ -82,12 +88,17 @@ class PdbcSqlTemplate(object):
             page_result.pageNum = row_bound.pageNum
             page_result.pageSize = row_bound.pageSize
             if count_sql is None:
-                cursor.execute(count_query(sql), args)
+                count_sql = count_query(sql)
+                LOG.debug('execute sql {},args {}'.format(count_sql, args))
+                cursor.execute(count_sql, args)
                 page_result.total = cursor.fetchone()['count(*)']
             else:
                 cursor.execute(count_sql, args)
+                LOG.debug('execute sql {},args {}'.format(count_sql, args))
                 page_result.total = get_one_value(cursor.fetchone())
-            cursor.execute(limit_query(sql, row_bound), args)
+            sql = limit_query(sql, row_bound)
+            LOG.debug('execute sql {},args {}'.format(sql, args))
+            cursor.execute(sql, args)
             page_result.list = cursor.fetchall()
             cursor.close()
         return page_result
