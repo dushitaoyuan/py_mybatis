@@ -28,15 +28,17 @@ setup(
     version='0.1.0',
     author='dushitaoyuan',
     author_email='dushitaoyuan@gmail.com',
-    url='http://github.com/hhyo/mybatis-mapper2sql',
+    url='https://github.com/dushitaoyuan/py_mybatis.git',
     description='python mybatis',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
-    keywords='mybatis mapper2sql mybatis-mapper2sql',
-    packages=['mybatis_mapper2sql'],
+    keywords='mybatis py_mybatis dynamic sql orm',
+    packages=['py_mybatis'],
     include_package_data=True,
     install_requires=[
-        'sqlparse>=0.2.4'
+        'sqlparse>=0.2.4',
+        'DBUtils>=1.3',
+        'PyMySQL>=0.9.3'
     ],
     license='Apache 2.0',
     zip_safe=False,

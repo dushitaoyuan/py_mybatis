@@ -159,6 +159,30 @@ class PyMybatisTest(unittest.TestCase):
                                                                 self.sql_session.insert(self.sql_id,
                                                                                         params=params)))
 
+    """
+
+    self.sql_session.begin_tx():
+    会在当前线程的thread_local下绑定一个connection 此后执行所有方法都会在一个 connection下
+    除非手动调用 self.sql_session.close(): 关闭连接
+    self.sql_session.commit():提交事务
+    self.sql_session.rollback(): 关闭事务
+    
+    未调用:self.sql_session.begin_tx()方法:每次调用sql_session 都会新建一个连接,建议使用连接池
+    参考用法:
+            try:
+            self.sql_session.begin_tx()
+            .... do_something_tx
+            self.sql_session.commit()
+            print("commit")
+        except Exception as e:
+            print("exception rollback", e)
+            self.sql_session.rollback()
+        finally:
+            print("finally close")
+            self.sql_session.close()
+    
+    """
+
     def test_tx(self):
         print("============{}============".format('test_tx'))
         """

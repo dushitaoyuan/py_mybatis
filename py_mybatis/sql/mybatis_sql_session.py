@@ -83,7 +83,6 @@ class MybatisSqlSession(object):
         connection = self.dataSource.connection()
         connection.begin()
         self.connection_local.connection = connection
-        self.connection_local.auto_commit = False
 
     def select_one(self, sql_id: str, **kwargs):
         return self.sql_template.select_one(sql=self.mapper_dict.statement(sql_id, **kwargs), con=self.__con())
